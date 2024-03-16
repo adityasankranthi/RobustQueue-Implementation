@@ -8,19 +8,22 @@ This is a homework assignment at University of Wisconsin-Milwaukee.
 ### Focus
 
 #### What is this homework assignment about?
+This homework assignment is about implementing a queue data structure using a doubly-linked list with a dummy node
 
 ### Gather
 
 #### What do I know?  What do I need to know that's new?
+I need to get myself comfortable with the concepts of a queue. 
 
 ### Brainstorm
 
 #### What are some ideas for solving this homework assignment?
+I would follow the blue print of the doubly linked list we implemented in the previous home works and modify it according to this homework.
 
 ### Plan
 
 #### What will I work on first after I finish this planning part?
-
+I will first stub the whole file and then actually start implementing the What to do in the homework statement. 
 
 *The preceding steps should be completed and committed by the
 Friday 10pm deadline.*
