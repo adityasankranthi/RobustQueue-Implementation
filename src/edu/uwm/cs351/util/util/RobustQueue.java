@@ -1,7 +1,8 @@
 package edu.uwm.cs351.util.util;
-
 import java.util.*;
 import java.util.function.Consumer;
+
+
 
 public class RobustQueue<E> extends AbstractQueue<E> {
 	
@@ -28,9 +29,45 @@ public class RobustQueue<E> extends AbstractQueue<E> {
     private Node<E> dummy;
     private int size;
     
-    private boolean wellFormed() {
-    	return true;
-    }
+	private boolean wellFormed() {
+	    if (dummy == null) {
+	        return report("Dummy node is null");
+	    }
+	    if (dummy.data != null) {
+	        return report("Dummy node's data or tag is not null");
+	    }
+	    Node<E> current = dummy.next;
+	    Node<E> prevNode = dummy;
+	    boolean dummySeen = false;
+	    if (size == 0) {
+	    	if (dummy.next != dummy || dummy.prev != dummy) return report("Incorrect prev link in a node");
+	    	dummySeen = true;
+	    }
+	    else {
+		    while (!dummySeen && current != null) {
+		    	if (current == dummy) dummySeen = true;
+		        if (current.prev != prevNode) {
+		            return report("Incorrect prev link in a node");
+		        }
+		        prevNode = current;
+		        current = current.next;
+		    }
+	    }
+	    int count = 0;
+	    current = dummy.next;
+	    while (current != dummy && current != null) {
+	        count++;
+	        if (current.prev == null || current.next == null) return report("Null link in a node");
+	        if (current.data == null) return report("Null tag in a node");
+	        current = current.next;
+	    }
+	    if (count != size) {
+	        return report("Size field does not match the number of non-dummy nodes");
+	    }
+	    return true;
+	}
+
+
     
 	private RobustQueue(boolean ignored) {} // do not change this constructor
 
@@ -119,6 +156,7 @@ public class RobustQueue<E> extends AbstractQueue<E> {
         private Node<E> current;
         
 		private boolean wellFormed() {
+			
 			return true;
 		}
 		
