@@ -78,14 +78,8 @@ public class RobustQueue<E> extends AbstractQueue<E> {
         size = 0;
     }
     
-    // Queue methods
-    @Override
-    public boolean add(E e) {
-        offer(e);
-        return true;
-    }
     
-    @Override
+	@Override // required
     public boolean offer(E e) {
         Node<E> newNode = new Node<>(e);
         newNode.next = dummy;
@@ -95,15 +89,8 @@ public class RobustQueue<E> extends AbstractQueue<E> {
         size++;
         return true;
     }
-    
-    @Override
-    public E remove() {
-        if (size == 0)
-            throw new NoSuchElementException();
-        return poll();
-    }
-    
-    @Override
+
+    @Override // required
     public E poll() {
         if (size == 0)
             return null;
@@ -114,28 +101,20 @@ public class RobustQueue<E> extends AbstractQueue<E> {
         size--;
         return element;
     }
-    
-    @Override
-    public E element() {
-        if (size == 0)
-            throw new NoSuchElementException();
-        return peek();
-    }
-    
-    @Override
+
+    @Override // required
     public E peek() {
         if (size == 0)
             return null;
         return dummy.next.data;
     }
-    
-    
-    @Override
+
+    @Override // required
     public int size() {
         return size;
     }
     
-    
+  
     @Override
     public Iterator<E> iterator() {
         return new MyIterator();
@@ -208,15 +187,15 @@ public class RobustQueue<E> extends AbstractQueue<E> {
 
         @Override
         public boolean hasNext() {
-            return current != dummy;
+            return current.next != dummy;
         }
         
         @Override
         public E next() {
             if (!hasNext())
                 throw new NoSuchElementException();
-            E element = current.data;
-            current = current.next;
+            E element = current.next.data;
+            current = current.next.next;
             return element;
         }
         
