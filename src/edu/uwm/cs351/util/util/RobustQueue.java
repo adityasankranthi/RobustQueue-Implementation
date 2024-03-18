@@ -3,7 +3,6 @@ import java.util.*;
 import java.util.function.Consumer;
 
 
-
 public class RobustQueue<E> extends AbstractQueue<E> {
 	
 	private static Consumer<String> reporter = (s) -> System.out.println("Invariant error: "+ s);
@@ -130,21 +129,12 @@ public class RobustQueue<E> extends AbstractQueue<E> {
         return dummy.next.data;
     }
     
-    @Override
-    public void clear() {
-        while (size > 0)
-            poll();
-    }
     
     @Override
     public int size() {
         return size;
     }
     
-    @Override
-    public boolean isEmpty() {
-        return size == 0;
-    }
     
     @Override
     public Iterator<E> iterator() {
@@ -155,11 +145,61 @@ public class RobustQueue<E> extends AbstractQueue<E> {
     private class MyIterator implements Iterator<E> {
         private Node<E> current;
         
-		private boolean wellFormed() {
-			
-			return true;
-		}
-		
+        private boolean wellFormed() {
+            if (!RobustQueue.this.wellFormed()) 
+                return false;
+
+            // 1. The current pointer is never null.
+            if (current == null)
+                return report("Current pointer is null");
+
+//             2. If the current pointer's data field is not null, then it is in the "real" list.
+            if (current.data != null) {
+                boolean found = false;
+                Node<E> temp = dummy.next;
+                while (temp != dummy) {
+                    if (temp == current) {
+                        found = true;
+                        break;
+                    }
+                    temp = temp.next;
+                }
+                if (!found) 
+                    return report("Current pointer's data field is not null but not found in the real list");
+            }
+            
+            // 3. The current pointer's node can reach the dummy by traversing "prev" links only.
+            Node<E> slow = current;
+            Node<E> fast = current.prev;
+    	    while (fast != dummy) {
+    	    	if (fast == null || fast == slow ) return report("cycle detected");
+    	    	slow = slow.prev;
+    	        fast = fast.prev;
+    	    	if (fast == null) return report("cycle detected");
+    	    	if(fast != dummy) fast = fast.prev;
+    	    }
+            // 4. Any node reached by "prev" links from the current pointer that has a non-null data
+            // field is in the "real" list.
+            Node<E> pointer = current.prev;
+            while (pointer != dummy) {
+                if (pointer.data != null) {
+                    boolean found = false;
+                    Node<E> temp = dummy.next;
+                    while (temp != dummy) {
+                        if (temp == pointer) {
+                            found = true;
+                            break;
+                        }
+                        temp = temp.next;
+                    }
+                    if (!found) 
+                        return report("Node reached by 'prev' links from current pointer has a non-null data field but not found in the real list");
+                }
+                pointer = pointer.prev;
+            }
+            return true;
+        }
+
         MyIterator() {
             current = dummy.next;
         }
@@ -288,10 +328,7 @@ public class RobustQueue<E> extends AbstractQueue<E> {
 		/**
 		 * Creates a testing instance of an iterator
 		 * @param outer the collection attached to the iterator
-		 * @param t the tag
 		 * @param c the current node
-		 * @param n the next node
-		 * @param cv the colVersion
 		 */
 		public <E> Iterator<E> newIterator(RobustQueue<E> outer, Node<E> c) {
 			RobustQueue<E>.MyIterator result = outer.new MyIterator(false);
