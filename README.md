@@ -33,14 +33,18 @@ Friday 10pm deadline.*
 ### Review
 
 #### Did I correctly anticipate the difficulties?
+No, I lacked understanding the usage of iterators methods for the data structure.
 
 #### How did the plan go?
+The plan almost went fine, except I should have started earlier.
 
 ### Preview
 
 #### What should I do differently for next week's homework assignment?
+Start early.
 
 #### Do I need more resources?
+yes, I felt like I need more resources in understanding the homework.
 
 ## Optional Feedback
 
