@@ -25,7 +25,6 @@ public class RobustQueue<E> extends AbstractQueue<E> {
 
     }
     
-    // Fields
     private Node<E> dummy;
     private int size;
     
@@ -71,7 +70,8 @@ public class RobustQueue<E> extends AbstractQueue<E> {
     
 	private RobustQueue(boolean ignored) {} // do not change this constructor
 
-    // Constructor
+	/** Construct an empty RobustQueue.
+	 */
     public RobustQueue() {
         dummy = new Node<>(null);
         dummy.next = dummy;
@@ -136,7 +136,7 @@ public class RobustQueue<E> extends AbstractQueue<E> {
     }
     
   
-    @Override
+    @Override // required
     public Iterator<E> iterator() {
     	assert wellFormed(): "invariant in iterator";
         return new MyIterator();
@@ -201,6 +201,8 @@ public class RobustQueue<E> extends AbstractQueue<E> {
             return true;
         }
 
+    	/** initialize an iterator for RobustQueue.
+    	 */
         MyIterator() {
             current = dummy;
         	assert wellFormed(): "invariant in constructor of MyIterator";
@@ -245,7 +247,7 @@ public class RobustQueue<E> extends AbstractQueue<E> {
             return element;
         }
         
-        @Override
+        @Override // Implementation
         public void remove() {
         	moveToValid();
             assert wellFormed() : "Invariant broken in remove";
@@ -269,7 +271,7 @@ public class RobustQueue<E> extends AbstractQueue<E> {
 		 */
 		public static class Node<U> extends RobustQueue.Node<U> {
 			/**
-			 * Create a node with null data, tag, prev, and next fields.
+			 * Create a node with null data, prev, and next fields.
 			 */
 			public Node() {
 				this(null, null, null);
@@ -277,7 +279,6 @@ public class RobustQueue<E> extends AbstractQueue<E> {
 			/**
 			 * Create a node with the given values
 			 * @param d data for new node, may be null
-			 * @param t tag for new node,may be null
 			 * @param p prev for new node, may be null
 			 * @param n next for new node, may be null
 			 */
@@ -292,13 +293,12 @@ public class RobustQueue<E> extends AbstractQueue<E> {
 		/**
 		 * Create a node for testing.
 		 * @param d data for new node, may be null
-		 * @param t tag for new node,may be null
 		 * @param p prev for new node, may be null
 		 * @param n next for new node, may be null
 		 * @return newly created test node
 		 */
-		public Node<T> newNode(T t, Node<T> p, Node<T> n) {
-			return new Node<T>(t, p, n);
+		public Node<T> newNode(T d, Node<T> p, Node<T> n) {
+			return new Node<T>(d, p, n);
 		}
 		
 		/**
@@ -348,7 +348,7 @@ public class RobustQueue<E> extends AbstractQueue<E> {
 		 * data structure.
 		 * @param d the dummy node
 		 * @param s the size
-		 * @return a new testing linked tag collection with this data structure.
+		 * @return a new testing Robust Queue with this data structure.
 		 */
 		public <U> RobustQueue<U> newInstance(Node<U> d, int s) {
 			RobustQueue<U> result = new RobustQueue<U>(false);
