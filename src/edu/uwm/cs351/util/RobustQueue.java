@@ -1,5 +1,6 @@
-package edu.uwm.cs351.util.util;
+package edu.uwm.cs351.util;
 import java.util.*;
+
 import java.util.function.Consumer;
 
 
@@ -76,39 +77,59 @@ public class RobustQueue<E> extends AbstractQueue<E> {
         dummy.next = dummy;
         dummy.prev = dummy;
         size = 0;
+        assert wellFormed(): "invariant failed at the end of the constructor";
     }
     
     
 	@Override // required
-    public boolean offer(E e) {
-        Node<E> newNode = new Node<>(e);
-        newNode.next = dummy;
-        newNode.prev = dummy.prev;
-        dummy.prev.next = newNode;
-        dummy.prev = newNode;
-        size++;
-        return true;
-    }
+	public boolean offer(E e) {
+	    assert wellFormed(): "invariant broken in offer";
+	    if (e == null) throw new NullPointerException("nothig to add");
+	    // Create a new node with the given element
+	    Node<E> newNode = new Node<>(e);
+	    
+	    // Link the new node to the end of the queue
+	    newNode.prev = dummy.prev;
+	    newNode.next = dummy;
+	    dummy.prev.next = newNode;
+	    dummy.prev = newNode;
+	    
+	    size++; // Increment the size of the queue
+	    
+	    assert wellFormed(): "invariant broken by offer";
+	    return true;
+	}
 
     @Override // required
     public E poll() {
-        if (size == 0)
+        assert wellFormed(): "invariant in poll";
+        
+        if (size == 0) // If the queue is empty, return null
             return null;
-        E element = dummy.next.data;
-        dummy.next.data = null;
-        dummy.next = dummy.next.next;
-        dummy.next.prev = dummy;
-        size--;
-        return element;
+        
+        // Remove the first element in the queue
+        Node<E> firstNode = dummy.next;
+        dummy.next = firstNode.next;
+        firstNode.next.prev = dummy;
+        
+        size--; // Decrement the size of the queue
+        
+        assert wellFormed(): "invariant by poll";
+        return firstNode.data;
     }
 
     @Override // required
     public E peek() {
-        if (size == 0)
+        assert wellFormed(): "invariant in peek";
+        
+        if (size == 0) // If the queue is empty, return null
             return null;
+        
+        // Return the data of the first element in the queue
         return dummy.next.data;
     }
-
+    
+    
     @Override // required
     public int size() {
         return size;
@@ -117,6 +138,7 @@ public class RobustQueue<E> extends AbstractQueue<E> {
   
     @Override
     public Iterator<E> iterator() {
+    	assert wellFormed(): "invariant in iterator";
         return new MyIterator();
     }
     
@@ -180,31 +202,63 @@ public class RobustQueue<E> extends AbstractQueue<E> {
         }
 
         MyIterator() {
-            current = dummy.next;
+            current = dummy;
+        	assert wellFormed(): "invariant in constructor of MyIterator";
+
         }
         
 		MyIterator(boolean ignored) {} // do not change this constructor
+		
+		private void moveToValid() {
+            if (current.data != null) {
+                boolean found = false;
+                Node<E> temp = dummy.next;
+                while (temp != dummy) {
+                    if (temp == current) {
+                        found = true;
+                        break;
+                    }
+                    temp = temp.next;
+                }
+                if (!found) {
+                	current = current.prev;
+                }
+            }
+		}
 
-        @Override
+        @Override // required
         public boolean hasNext() {
+        	moveToValid();
+        	assert wellFormed(): "invariant in hasNext";
             return current.next != dummy;
         }
         
-        @Override
+        @Override // required
         public E next() {
+        	moveToValid();
+        	assert wellFormed(): "invariant in next";
             if (!hasNext())
                 throw new NoSuchElementException();
             E element = current.next.data;
-            current = current.next.next;
+            current = current.next;
+        	assert wellFormed(): "invariant by next";
             return element;
         }
         
         @Override
         public void remove() {
-            throw new UnsupportedOperationException();
+        	moveToValid();
+            assert wellFormed() : "Invariant broken in remove";
+            if (current == dummy || current.data == null) {
+                throw new IllegalStateException("Cannot call remove before next()");
+            }
+            Node<E> prevNode = current.prev; // Store the previous node before removal
+            current.prev.next = current.next;
+            current.next.prev = current.prev;
+            current = prevNode;
+            size--;
+            assert wellFormed() : "Invariant broken by remove";
         }
-
-
     }
     
     // Spy class
@@ -294,7 +348,6 @@ public class RobustQueue<E> extends AbstractQueue<E> {
 		 * data structure.
 		 * @param d the dummy node
 		 * @param s the size
-		 * @param v the version
 		 * @return a new testing linked tag collection with this data structure.
 		 */
 		public <U> RobustQueue<U> newInstance(Node<U> d, int s) {
