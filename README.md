@@ -1,57 +1,45 @@
-[![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-24ddc0f5d75046c5622901739e7c5dd533143b0c8e959d652212380cedb1ea36.svg)](https://classroom.github.com/a/PLCdS2oZ)
-# CompSci 351 / CompSt 751 Homework Assignment 7
+## Overview
+The goal is to implement a generic **RobustQueue** data structure using a circular doubly-linked list with a dummy node. The **RobustQueue** supports robust iterators, which are designed to remain functional even if elements are added or removed from the queue while the iterator is in use.
 
-This is a homework assignment at University of Wisconsin-Milwaukee.
+## Key Features
+- **Robust Iterators**: Iterators that never go stale, handling concurrent modifications gracefully.
+- **Circular Doubly-Linked List**: The queue is implemented using a circular doubly-linked list with a dummy node, ensuring that no null pointers are encountered during traversal.
+- **Queue ADT Operations**: Implements standard Queue operations (`add`, `offer`, `remove`, `poll`, `element`, `peek`), with robust handling for edge cases.
+- **No Null Elements**: Follows the common convention of disallowing null values in the queue.
 
-## Planning: Due Friday 10pm
+## Data Structure Invariant
+The **RobustQueue** maintains the following invariants:
+1. The dummy node is never null.
+2. The dummy node's data is always null.
+3. Traversing the `next` links or `prev` links from the dummy node will always return to the dummy node (circular structure).
+4. Every node in the list has consistent `next` and `prev` links.
+5. No node other than the dummy node has null data.
+6. The number of nodes in the queue matches the size field.
 
-### Focus
+## Iterator Invariant
+The iterator maintains the following invariants:
+1. The current pointer is never null.
+2. If the current pointer's data is not null, the node is part of the active list.
+3. The current pointer's node can reach the dummy by traversing `prev` links only.
+4. Any node reachable by `prev` links from the current pointer with non-null data is in the active list.
 
-#### What is this homework assignment about?
-This homework assignment is about implementing a queue data structure using a doubly-linked list with a dummy node
+## Class Structure
+- **RobustQueue**: The main class implementing the queue ADT using a circular doubly-linked list.
+- **Node**: A static inner class representing each node in the list.
+- **RobustQueueIterator**: A private nested class implementing a robust iterator.
+- **Spy**: A static inner class for testing and debugging, adapted from the Spy class used in previous assignments.
 
-### Gather
+## Testing
+- Comprehensive unit tests are provided to ensure correctness and robustness of the **RobustQueue** implementation.
+- The project includes:
+  - Invariant tests to validate the integrity of the data structure.
+  - Functional tests to ensure the correct behavior of queue operations and iterators.
+  - Randomized tests for robustness.
+  - Efficiency tests to evaluate the performance of the implementation.
 
-#### What do I know?  What do I need to know that's new?
-I need to get myself comfortable with the concepts of a queue. 
+## License
+This project is licensed under the MIT License. You are free to use, modify, and distribute this code with attribution.
 
-### Brainstorm
+---
 
-#### What are some ideas for solving this homework assignment?
-I would follow the blue print of the doubly linked list we implemented in the previous home works and modify it according to this homework.
-
-### Plan
-
-#### What will I work on first after I finish this planning part?
-I will first stub the whole file and then actually start implementing the What to do in the homework statement. 
-
-*The preceding steps should be completed and committed by the
-Friday 10pm deadline.*
-
-## Reflection: Due Monday 10pm
-
-### Review
-
-#### Did I correctly anticipate the difficulties?
-No, I lacked understanding the usage of iterators methods for the data structure.
-
-#### How did the plan go?
-The plan almost went fine, except I should have started earlier.
-
-### Preview
-
-#### What should I do differently for next week's homework assignment?
-Start early.
-
-#### Do I need more resources?
-yes, I felt like I need more resources in understanding the homework.
-
-## Optional Feedback
-
-### Comments (optional)
-
-#### Here are my comments on the assignment to the course instructors:
-
-### Check in (optional)
-
-#### How am I feeling about the assignment and this course?
+This README should provide a clear and professional overview of the project, making it suitable for showcasing to potential employers.
